@@ -1,15 +1,49 @@
-
 public class LinkedList<T> {
-    private ListNode<T> head;
+    private class Node {
+        T data;
+        Node next;
+
+        Node(T data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
+
+    private Node head;
+    private int size;
+
+    public LinkedList() {
+        head = null;
+        size = 0;
+    }
 
     public void insert(T data) {
-        ListNode<T> newNode = new ListNode<>(data);
+        Node newNode = new Node(data);
         newNode.next = head;
         head = newNode;
+        size++;
+    }
+
+    public void remove(T data) {
+        if (head == null) return;
+        if (head.data.equals(data)) {
+            head = head.next;
+            size--;
+            return;
+        }
+        Node current = head;
+        while (current.next != null) {
+            if (current.next.data.equals(data)) {
+                current.next = current.next.next;
+                size--;
+                return;
+            }
+            current = current.next;
+        }
     }
 
     public boolean contains(T data) {
-        ListNode<T> current = head;
+        Node current = head;
         while (current != null) {
             if (current.data.equals(data)) return true;
             current = current.next;
@@ -17,29 +51,26 @@ public class LinkedList<T> {
         return false;
     }
 
-    public ListNode<T> getHead() {
-        return head;
-    }
-
-    public void remove(T data) {
-        if (head == null) return;
-        if (head.data.equals(data)) {
-            head = head.next;
-            return;
-        }
-        ListNode<T> current = head;
-        while (current.next != null && !current.next.data.equals(data)) {
+    public T get(int index) {
+        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+        Node current = head;
+        for (int i = 0; i < index; i++) {
             current = current.next;
         }
-        if (current.next != null) current.next = current.next.next;
+        return current.data;
     }
 
-    public void print() {
-        ListNode<T> current = head;
+    public int size() {
+        return size;
+    }
+
+    public LinkedList<T> copy() {
+        LinkedList<T> newList = new LinkedList<>();
+        Node current = head;
         while (current != null) {
-            System.out.print(current.data + " -> ");
+            newList.insert(current.data);
             current = current.next;
         }
-        System.out.println("null");
+        return newList;
     }
 }

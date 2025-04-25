@@ -1,11 +1,10 @@
-
 public class Photo {
     private String path;
     private LinkedList<String> tags;
 
     public Photo(String path, LinkedList<String> tags) {
         this.path = path;
-        this.tags = tags;
+        this.tags = tags.copy();
     }
 
     public String getPath() {
@@ -13,6 +12,6 @@ public class Photo {
     }
 
     public LinkedList<String> getTags() {
-        return tags;
+        return tags.copy();
     }
 }

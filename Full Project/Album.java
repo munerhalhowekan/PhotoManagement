@@ -1,4 +1,3 @@
-
 public class Album {
     private String name;
     private String condition;
@@ -9,6 +8,7 @@ public class Album {
         this.name = name;
         this.condition = condition;
         this.manager = manager;
+        this.nbComps = 0;
     }
 
     public String getName() {
@@ -25,23 +25,39 @@ public class Album {
 
     public LinkedList<Photo> getPhotos() {
         nbComps = 0;
-        LinkedList<Photo> result = new LinkedList<Photo>();
-        String[] requiredTags = condition.trim().equals("") ? new String[0] : condition.split("\s+AND\s+");
+        if (manager instanceof InvIndexPhotoManager) {
+            LinkedList<Photo> photos = ((InvIndexPhotoManager) manager).getPhotosByCondition(condition);
+            // Count comparisons: number of tags * number of photos checked
+            if (condition != null && !condition.isEmpty()) {
+                String[] tags = condition.split("\\s+AND\\s+");
+                nbComps = tags.length * photos.size();
+            }
+            return photos;
+        } else {
+            LinkedList<Photo> result = new LinkedList<>();
+            LinkedList<Photo> allPhotos = manager.getPhotos();
 
-        ListNode<Photo> current = manager.getPhotos().getHead();
-        while (current != null) {
-            boolean matches = true;
-            for (String tag : requiredTags) {
-                nbComps++;
-                if (!current.data.getTags().contains(tag)) {
-                    matches = false;
-                    break;
+            if (condition == null || condition.isEmpty()) {
+                return allPhotos.copy();
+            }
+
+            String[] tags = condition.split("\\s+AND\\s+");
+            for (int i = 0; i < allPhotos.size(); i++) {
+                Photo photo = allPhotos.get(i);
+                boolean satisfies = true;
+                for (String tag : tags) {
+                    nbComps++;
+                    if (!photo.getTags().contains(tag)) {
+                        satisfies = false;
+                        break;
+                    }
+                }
+                if (satisfies) {
+                    result.insert(photo);
                 }
             }
-            if (matches) result.insert(current.data);
-            current = current.next;
+            return result;
         }
-        return result;
     }
 
     public int getNbComps() {

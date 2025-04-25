@@ -1,13 +1,12 @@
-
 public class PhotoManager {
     private LinkedList<Photo> photos;
 
     public PhotoManager() {
-        photos = new LinkedList<Photo>();
+        photos = new LinkedList<>();
     }
 
     public LinkedList<Photo> getPhotos() {
-        return photos;
+        return photos.copy();
     }
 
     public void addPhoto(Photo p) {
@@ -15,13 +14,12 @@ public class PhotoManager {
     }
 
     public void deletePhoto(String path) {
-        ListNode<Photo> current = photos.getHead();
-        while (current != null) {
-            if (current.data.getPath().equals(path)) {
-                photos.remove(current.data);
-                return;
+        for (int i = 0; i < photos.size(); i++) {
+            Photo p = photos.get(i);
+            if (p.getPath().equals(path)) {
+                photos.remove(p);
+                break;
             }
-            current = current.next;
         }
     }
 }
